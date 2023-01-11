@@ -16,6 +16,15 @@ function processChildren(c) {
   return slides;
 }
 
+function setChildKey(child, index) {
+  const KEY_PATTERN = /\.\$.+/;
+  if (child.key && KEY_PATTERN.test(child.key)) {
+    return child.key;
+  }
+
+  return `.$${index}-slide`;
+}
+
 function getChildren(c) {
   const slides = [];
 
@@ -26,9 +35,9 @@ function getChildren(c) {
     'wrapper-end': [],
   };
 
-  React.Children.toArray(c).forEach((child) => {
+  React.Children.toArray(c).forEach((child, index) => {
     if (isChildSwiperSlide(child)) {
-      slides.push(child);
+      slides.push(React.cloneElement(child, {key: setChildKey(child, index)}));
     } else if (child.props && child.props.slot && slots[child.props.slot]) {
       slots[child.props.slot].push(child);
     } else if (child.props && child.props.children) {
